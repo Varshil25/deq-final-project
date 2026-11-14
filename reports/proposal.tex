@@ -1,0 +1,120 @@
+% Proposal — submitted Nov 10, 2 pages, 11 pt.
+% Rewritten to use the shared deqreport.sty so all four documents match.
+% Build: make proposal
+\documentclass[11pt]{article}
+\usepackage{deqreport}
+\reporttitle{Final Project Proposal}
+
+\begin{document}
+\makeheader
+
+\section{Topic}
+
+This project follows the Efficient Implementation track, Direction~2: I will
+implement a deep equilibrium model (DEQ) myself, including the fixed-point
+forward solver and the implicit-differentiation backward pass. Automatic
+differentiation will not be run through the solver iterations.
+
+The deliverable has two parts. The first is a small fully connected DEQ in
+NumPy with every gradient derived and coded by hand, verified by
+finite-difference gradient checks. The second is a convolutional DEQ in
+PyTorch whose backward pass is a custom function I write, trained on MNIST and
+CIFAR-10. I will use it to compare three ways of computing the gradient (exact
+implicit, truncated Neumann, and Jacobian-free) against an unrolled weight-tied
+baseline on accuracy, memory, and run time.
+
+\section{Motivation}
+
+A DEQ replaces a stack of $L$ layers with one layer applied until its output
+stops changing, so the network is defined by an equation instead of a fixed
+sequence of operations. For input $x$, the hidden state is the fixed point
+\begin{equation}
+  \zstar = \fth(\zstar, x).
+\end{equation}
+Because the gradient depends only on the equilibrium and not on the path the
+solver took, training needs constant memory in the effective depth:
+\begin{equation}
+  \dd{\ell}{\theta}
+  = \dd{\ell}{\zstar}\left(I - \dd{\fth}{\zstar}\right)^{-1}\dd{\fth}{\theta}.
+  \label{eq:implicit}
+\end{equation}
+This is attractive, but it moves the difficulty elsewhere. Standard
+backpropagation, the rule taught in this course, no longer applies directly:
+the backward pass becomes a linear solve, and the forward pass may converge
+slowly or not at all as the weights grow during training. Frameworks hide these
+issues behind library calls. Implementing the solver and the gradient by hand
+is the most direct way to understand them, and it allows a controlled answer to
+a practical question: how much accuracy is lost when the exact inverse in
+Eq.~\eqref{eq:implicit} is replaced by a cheap approximation, and how much time
+is saved?
+
+\section{Related Work}
+
+\begin{itemize}
+  \item \textbf{Implicit layers.} OptNet~\cite{amos2017optnet} differentiates
+    through a quadratic program, Neural ODEs~\cite{chen2018neural} through an
+    ODE solver using the adjoint method, and El~Ghaoui et
+    al.~\cite{elghaoui2021implicit} give a general formulation and
+    well-posedness conditions for implicit models.
+  \item \textbf{Deep equilibrium models.} Bai et al.~\cite{bai2019deq}
+    introduce the DEQ for sequence modeling, using Broyden's
+    method~\cite{broyden1965class} for both passes. Multiscale
+    DEQ~\cite{bai2020mdeq} extends it to image classification and segmentation.
+  \item \textbf{Convergence guarantees.} Monotone operator equilibrium
+    networks~\cite{winston2020monotone} parameterize the layer so that a unique
+    fixed point exists and operator-splitting solvers are guaranteed to find it.
+  \item \textbf{Cheaper and more stable training.} Jacobian
+    regularization~\cite{bai2021stabilizing} penalizes the Jacobian norm at
+    equilibrium to keep solver iterations from growing. Phantom
+    gradients~\cite{geng2021training} and Jacobian-free
+    backpropagation~\cite{fung2022jfb} replace the exact inverse with a
+    truncated or zeroth-order approximation.
+\end{itemize}
+
+The gap this project addresses is a small, fully hand-derived implementation in
+which the three backward methods are compared under one architecture, one
+solver, and one compute budget.
+
+\section{Potential Solutions}
+
+\begin{enumerate}
+  \item \textbf{Layer.} The fully connected version uses
+    $f(z, x) = \ReLU(Wz + Ux + b)$. The convolutional version uses two
+    $3\times 3$ convolutions with group normalization and input injection. $W$
+    is rescaled by its spectral norm so the layer starts as a contraction.
+  \item \textbf{Forward solver.} Plain fixed-point iteration is the baseline.
+    Anderson acceleration~\cite{anderson1965iterative} with a memory of 5 is
+    the main solver, stopping at a relative residual of $10^{-3}$ or 50
+    iterations.
+  \item \textbf{Backward pass.} Three variants share the same forward pass:
+    \begin{itemize}
+      \item Exact implicit gradient: solve the linear system
+        $u = uJ + \dd{\ell}{\zstar}$ with the same Anderson solver.
+      \item Truncated Neumann series: approximate the inverse by its first $k$
+        terms, for $k$ from 1 to 5.
+      \item Jacobian-free: replace the inverse with the identity ($k = 0$).
+    \end{itemize}
+  \item \textbf{Baseline.} A weight-tied network that applies the same layer
+    $K$ times and trains with ordinary backpropagation through all $K$ steps.
+\end{enumerate}
+
+\textbf{Evaluation.} I will report test accuracy, peak memory, time per epoch,
+forward and backward iteration counts over training, and the cosine similarity
+between each approximate gradient and the exact one.
+
+\textbf{Risks.} If the forward solver stops converging late in training, I will
+add Jacobian regularization~\cite{bai2021stabilizing}. If CIFAR-10 exceeds a
+single-GPU budget, the full comparison will run on MNIST and CIFAR-10 will use
+a reduced model.
+
+\section{Timeline}
+
+\textbf{Nov 17 (progress report 1):} NumPy DEQ on MNIST with fixed-point and
+Anderson solvers, exact implicit backward pass, gradient check passing.
+\textbf{Dec 1 (progress report 2):} convolutional DEQ on CIFAR-10, Neumann and
+Jacobian-free backward passes, unrolled baseline, first comparison table.
+\textbf{Dec 8 (final report):} ablations on solver tolerance and Anderson
+memory, final results, write-up.
+
+\printrefs
+\end{document}

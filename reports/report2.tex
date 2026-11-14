@@ -1,0 +1,86 @@
+% Progress Report II — due Dec 1, 2 pages, 11 pt.
+% Build: make report2
+\documentclass[11pt]{article}
+\usepackage{deqreport}
+\reporttitle{Progress Report II}
+
+\begin{document}
+\makeheader
+
+\section{Summary}
+
+% Lead with the comparison result — that is the project's main question.
+\textsc{TODO: one paragraph. The three backward methods now run on the same
+convolutional model; the headline accuracy/time trade-off is X.}
+
+\section{Progress Since Report I}
+
+\subsection{Convolutional DEQ in PyTorch}
+
+% Architecture, and what part of the backward pass is yours vs autograd.
+The equilibrium layer is two $3\times3$ convolutions with group normalization
+and input injection. The solver and the implicit gradient are implemented as a
+custom \texttt{torch.autograd.Function}; autograd supplies only the
+vector-Jacobian product of a \emph{single} layer evaluation, never a
+differentiated solver trajectory.
+
+\subsection{Three backward passes}
+
+% The variants, stated as what replaces the inverse in Eq. (2) of Report I.
+\begin{enumerate}
+  \item \textbf{Exact implicit.} Solve $u = uJ + \dd{\ell}{\zstar}$ to
+    tolerance with Anderson.
+  \item \textbf{Truncated Neumann.} Approximate $(I-J)^{-1}$ by
+    $\sum_{i=0}^{k} J^i$ for $k = 1 \ldots 5$~\cite{geng2021training}.
+  \item \textbf{Jacobian-free.} Take $(I-J)^{-1} \approx I$, i.e.\
+    $k = 0$~\cite{fung2022jfb}.
+\end{enumerate}
+
+\subsection{Unrolled baseline}
+
+A weight-tied network applying the same layer $K$ times, trained with ordinary
+backpropagation through all $K$ steps, gives the memory and accuracy reference
+point.
+
+\section{Results}
+
+\begin{table}[h]
+  \centering
+  \caption{CIFAR-10, \textsc{TODO} epochs. Gradient cosine similarity is
+    measured against the exact implicit gradient.}
+  \begin{tabularx}{\textwidth}{@{}Xrrrr@{}}
+    \toprule
+    Method & Test acc.\ (\%) & Peak mem.\ (MB) & Time/epoch (s) & Grad.\ cos.\ sim. \\
+    \midrule
+    Unrolled ($K=\textsc{TODO}$) & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & -- \\
+    Exact implicit & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & 1.000 \\
+    Neumann ($k=1$) & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} \\
+    Neumann ($k=5$) & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} \\
+    Jacobian-free & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} \\
+    \bottomrule
+  \end{tabularx}
+  \label{tab:compare}
+\end{table}
+
+% A figure of solver iterations over training shows whether the model is
+% becoming harder to solve — the main stability story.
+% \begin{figure}[h]\centering
+%   \includegraphics[width=0.75\textwidth]{figures/fwd_iters.pdf}
+%   \caption{Forward solver iterations per epoch.}\label{fig:iters}
+% \end{figure}
+
+\textsc{TODO: two or three sentences reading the table.}
+
+\section{Problems Encountered}
+
+\textsc{TODO}
+
+\section{Plan for Next Steps}
+
+The final report (Dec 8) adds ablations on solver tolerance and Anderson
+memory, the Neumann order sweep, Jacobian
+regularization~\cite{bai2021stabilizing} if convergence degrades, and the full
+write-up.
+
+\printrefs
+\end{document}

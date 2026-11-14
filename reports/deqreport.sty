@@ -1,0 +1,82 @@
+% deqreport.sty — shared style for all reports in this project.
+% Every report (proposal, progress I, progress II, final) loads this file,
+% so the formatting is identical across submissions.
+%
+% Usage in a report:
+%   \documentclass[11pt]{article}
+%   \usepackage{deqreport}
+%   \reporttitle{Progress Report I}
+%   \begin{document}\makeheader ... \printrefs \end{document}
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{deqreport}[2026/11/14 DEQ final project report style]
+
+% ---------- page, fonts, spacing (11 pt per the assignment) ----------
+\RequirePackage[margin=1in]{geometry}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{lmodern}
+\RequirePackage{microtype}
+
+% ---------- math, tables, figures, code ----------
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{graphicx}
+\RequirePackage{enumitem}
+\RequirePackage{titlesec}
+\RequirePackage{caption}
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist{nosep,leftmargin=1.4em,topsep=2pt}
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection.}{0.4em}{}
+\titlespacing*{\section}{0pt}{8pt}{3pt}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.4em}{}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+\setlength{\abovedisplayskip}{4pt}
+\setlength{\belowdisplayskip}{4pt}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\pagestyle{empty}
+
+% ---------- author block: set once here, used by every report ----------
+\newcommand{\projecttitle}{Implementing Deep Equilibrium Models from Scratch}
+\newcommand{\authorname}{Varshil Patel}
+\newcommand{\authortuid}{916646801}
+\newcommand{\instructorname}{Hongchang Gao}
+
+% \reporttitle{...} sets which report this is (Proposal, Progress Report I, ...)
+\newcommand{\@reportkind}{}
+\newcommand{\reporttitle}[1]{\renewcommand{\@reportkind}{#1}}
+
+\newcommand{\makeheader}{%
+  \begin{center}
+    {\Large\bfseries \@reportkind:\\[2pt] \projecttitle}\\[6pt]
+    \textbf{Name:} \authorname \quad
+    \textbf{TUID:} \authortuid \quad
+    \textbf{Instructor:} \instructorname
+  \end{center}
+}
+
+% ---------- shared math notation ----------
+\newcommand{\zstar}{z^{*}}
+\newcommand{\fth}{f_{\theta}}
+\newcommand{\dd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\RR}{\mathbb{R}}
+\DeclareMathOperator{\ReLU}{ReLU}
+
+% ---------- references: one shared refs.bib for every report ----------
+\newcommand{\printrefs}{%
+  \footnotesize
+  \setlength{\bibsep}{0pt plus 0.3ex}
+  \bibliographystyle{abbrv}
+  \bibliography{refs}%
+}
+\RequirePackage{natbib}
+\setlength{\bibsep}{0pt plus 0.3ex}
+\renewcommand{\bibfont}{\footnotesize}
+
+\endinput

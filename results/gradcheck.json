@@ -1,0 +1,37 @@
+[
+  {
+    "param": "W",
+    "max_abs_err": 6.468302671638112e-11,
+    "max_rel_err": 1.2657694778658798e-06,
+    "n_entries": 25,
+    "n_nonzero": 9
+  },
+  {
+    "param": "U",
+    "max_abs_err": 1.0855126519881964e-10,
+    "max_rel_err": 1.3480446876695542e-08,
+    "n_entries": 30,
+    "n_nonzero": 30
+  },
+  {
+    "param": "b",
+    "max_abs_err": 3.3796056231327753e-11,
+    "max_rel_err": 1.8612562502593214e-09,
+    "n_entries": 5,
+    "n_nonzero": 5
+  },
+  {
+    "param": "V",
+    "max_abs_err": 6.905975791227092e-11,
+    "max_rel_err": 3.286015667103036e-07,
+    "n_entries": 15,
+    "n_nonzero": 15
+  },
+  {
+    "param": "c",
+    "max_abs_err": 9.424120511747347e-11,
+    "max_rel_err": 1.5349452493835677e-09,
+    "n_entries": 3,
+    "n_nonzero": 3
+  }
+]

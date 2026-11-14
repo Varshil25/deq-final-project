@@ -1,0 +1,101 @@
+% Final Report — due Dec 8, 5 pages, 11 pt.
+% Required sections: introduction, related works, methodology, experimental
+% results, conclusions.
+% Build: make final
+\documentclass[11pt]{article}
+\usepackage{deqreport}
+\reporttitle{Final Report}
+
+\begin{document}
+\makeheader
+
+\section{Introduction}
+
+% Open with the problem and the finding, not with background. One paragraph on
+% what a DEQ is, one on what this project did, one on what was found.
+\textsc{TODO}
+
+\section{Related Work}
+
+% Reuse and expand the proposal's related work. Group by theme, not by paper.
+\paragraph{Implicit layers.}
+\textsc{TODO}~\cite{amos2017optnet,chen2018neural,elghaoui2021implicit}
+
+\paragraph{Deep equilibrium models.}
+\textsc{TODO}~\cite{bai2019deq,bai2020mdeq,winston2020monotone}
+
+\paragraph{Cheaper and more stable training.}
+\textsc{TODO}~\cite{bai2021stabilizing,geng2021training,fung2022jfb}
+
+\section{Methodology}
+
+\subsection{Equilibrium formulation}
+
+For input $x$ the hidden state is the fixed point
+$\zstar = \fth(\zstar, x)$, and the gradient follows from implicit
+differentiation:
+\begin{equation}
+  \dd{\ell}{\theta}
+  = \dd{\ell}{\zstar}\left(I - \dd{\fth}{\zstar}\right)^{-1}\dd{\fth}{\theta}.
+  \label{eq:implicit}
+\end{equation}
+
+\subsection{Forward solver}
+
+% Include the Anderson pseudocode — it is your implementation, so show it.
+\begin{algorithm}[h]
+\caption{Anderson acceleration for $\zstar = \fth(\zstar,x)$}
+\label{alg:anderson}
+\begin{algorithmic}[1]
+  \State \textsc{TODO: fill from deq/solvers.py}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Backward pass}
+
+% Derive the hand-computed Jacobian-vector products. This is the core
+% contribution for the "implement backpropagation yourself" track.
+\textsc{TODO}
+
+\subsection{Gradient approximations}
+
+\textsc{TODO: exact, Neumann order $k$, Jacobian-free.}
+
+\section{Experimental Results}
+
+\subsection{Setup}
+
+% Datasets, model sizes, optimizer, epochs, hardware. Enough to reproduce.
+\textsc{TODO}
+
+\subsection{Gradient correctness}
+
+\textsc{TODO: the finite-difference check from Report I.}
+
+\subsection{Accuracy, memory and time}
+
+\begin{table}[h]
+  \centering
+  \caption{\textsc{TODO}}
+  \begin{tabularx}{\textwidth}{@{}Xrrrr@{}}
+    \toprule
+    Method & Test acc.\ (\%) & Peak mem.\ (MB) & Time/epoch (s) & Grad.\ cos.\ sim. \\
+    \midrule
+    \textsc{TODO} & & & & \\
+    \bottomrule
+  \end{tabularx}
+  \label{tab:main}
+\end{table}
+
+\subsection{Ablations}
+
+% Solver tolerance, Anderson memory, Neumann order.
+\textsc{TODO}
+
+\section{Conclusions}
+
+% What was learned, what the trade-off is, and one honest limitation.
+\textsc{TODO}
+
+\printrefs
+\end{document}

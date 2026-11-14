@@ -1,0 +1,28 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Keep the PDFs you submit, ignore nothing else in reports/
+!reports/*.pdf
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+.venv/
+
+# Data and large outputs
+data/
+*.npz
+*.pt
+*.pth
+# results JSONs are small and the report tables are generated from them
+# (keep them in git); only raw data and checkpoints are ignored
