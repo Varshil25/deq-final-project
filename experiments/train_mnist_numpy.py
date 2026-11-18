@@ -64,6 +64,13 @@ def main():
     ap.add_argument("--max-iter", type=int, default=50)
     ap.add_argument("--train-size", type=int, default=0, help="0 = all 60k")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument(
+        "--lam-scaling",
+        default="relative",
+        choices=["relative", "absolute"],
+        help="Anderson Tikhonov term; 'absolute' reproduces the stalling bug",
+    )
+    ap.add_argument("--tag", default="", help="suffix for the results filename")
     args = ap.parse_args()
 
     d = load()
@@ -77,6 +84,8 @@ def main():
     p = init_params(784, args.hidden, 10, seed=args.seed)
     opt = Adam(p, lr=args.lr)
     kw = dict(solver=args.solver, tol=args.tol, max_iter=args.max_iter)
+    if args.solver == "anderson":
+        kw["lam_scaling"] = args.lam_scaling
 
     rng = np.random.default_rng(args.seed)
     history = []
@@ -115,7 +124,7 @@ def main():
             f"{rec['epoch_time_s']:.1f}s"
         )
 
-    out = ROOT / "results" / f"mnist_{args.solver}.json"
+    out = ROOT / "results" / f"mnist_{args.solver}{args.tag}.json"
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(dict(config=vars(args), history=history), indent=2))
     print(f"\nwritten to {out}")

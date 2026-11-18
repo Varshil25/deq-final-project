@@ -47,12 +47,17 @@ def fixed_point_solve(f, z0, max_iter=50, tol=1e-3):
     return SolverResult(z, max_iter, residuals)
 
 
-def anderson_solve(f, z0, m=5, lam=1e-4, beta=1.0, max_iter=50, tol=1e-3):
+def anderson_solve(f, z0, m=5, lam=1e-4, beta=1.0, max_iter=50, tol=1e-3,
+                   lam_scaling="relative"):
     """Anderson acceleration (Anderson, 1965).
 
     Keeps the last m iterates and residuals, and takes the step that minimises
     the residual over their affine hull. The least-squares problem is solved
     per batch element, which is why the history arrays carry a batch axis.
+
+    `lam_scaling="absolute"` restores the naive Tikhonov term that stalls the
+    backward solve; it exists so that behaviour can be reproduced on demand
+    rather than only described. See the comment in the loop.
     """
     bsz, d = z0.shape
     m = min(m, max_iter)
@@ -83,7 +88,12 @@ def anderson_solve(f, z0, m=5, lam=1e-4, beta=1.0, max_iter=50, tol=1e-3):
         # solve, where most examples contribute a near-zero gradient late in
         # training) lam dominates the normal equations, alpha collapses towards
         # uniform averaging and the solver stalls at the iteration cap.
-        scale = np.einsum("bii->b", GGt)[:, None, None] / n + 1e-30
+        if lam_scaling == "relative":
+            scale = np.einsum("bii->b", GGt)[:, None, None] / n + 1e-30
+        elif lam_scaling == "absolute":
+            scale = 1.0
+        else:
+            raise ValueError(f"unknown lam_scaling {lam_scaling!r}")
         H[:, 1 : n + 1, 1 : n + 1] = GGt + lam * scale * np.eye(n, dtype=z0.dtype)[None]
 
         alpha = np.linalg.solve(H[:, : n + 1, : n + 1], y[:, : n + 1])[:, 1 : n + 1, 0]

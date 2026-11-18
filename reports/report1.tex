@@ -105,16 +105,17 @@ does not pay for. At this problem size the cheaper iteration wins.
 
 \section{Problems Encountered}
 
-The backward solve initially stalled at the 50-iteration cap, taking 47
-iterations per batch against 17 for plain iteration, despite solving a
+The backward solve initially stalled near the 50-iteration cap, taking 46.6
+iterations per batch against 17.6 for plain iteration, despite solving a
 \emph{linear} fixed point that Anderson should handle easily. The cause was
 the Tikhonov term in Anderson's least-squares step being a fixed absolute
 constant. Late in training most examples are classified correctly and
 contribute a near-zero gradient, so the residual matrix $G$ becomes tiny, the
 regulariser dominates the normal equations, and the computed weights collapse
 towards uniform averaging. Scaling the regulariser by $\operatorname{tr}(GG^{\!\top})/m$
-fixed it: backward iterations fell from 47 to 11.7 and epoch time from 22.5\,s
-to 10.1\,s. This matters beyond the NumPy model, since the same solver is
+fixed it: backward iterations fell from 46.6 to 11.7 and epoch time from
+18.8\,s to 10.1\,s. Both runs are kept in \texttt{results/}, so the comparison
+is reproducible with \texttt{-{}-lam-scaling absolute}. This matters beyond the NumPy model, since the same solver is
 planned for the convolutional version where the effect would be larger.
 
 \section{Plan for Next Steps}

@@ -15,7 +15,7 @@ the solver.
 | Phase | Deliverable | Due | State |
 | --- | --- | --- | --- |
 | — | Proposal | Nov 10 | Submitted |
-| 1 | Progress Report I — NumPy DEQ, MNIST | Nov 17 | **Code done, gradients verified, report drafted** |
+| 1 | Progress Report I — NumPy DEQ, MNIST | Nov 17 | **Complete — submitted** |
 | 2 | Progress Report II — PyTorch conv DEQ, CIFAR-10 | Dec 1 | Not started |
 | 3 | Final Report — ablations and write-up | Dec 8 | Not started |
 
